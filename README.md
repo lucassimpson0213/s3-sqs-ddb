@@ -1,14 +1,22 @@
-# Welcome to your CDK TypeScript project
+File Processing Pipeline: JSON, CSV
 
-This is a blank project for CDK development with TypeScript.
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+S3 -> EventBridge -> SQS -> Lambda -> DynamoDB
 
-## Useful commands
+The Architecture is defined in the s3-sqs-ddb-stack.ts file declaraativley
+using the AWS CDK:
+-> https://docs.aws.amazon.com/cdk/v2/guide/home.html
 
-* `npm run build`   compile typescript to js
-* `npm run watch`   watch for changes and compile
-* `npm run test`    perform the jest unit tests
-* `npx cdk deploy`  deploy this stack to your default AWS account/region
-* `npx cdk diff`    compare deployed stack with current state
-* `npx cdk synth`   emits the synthesized CloudFormation template
+
+Upon File Upload, Object Created Events are sent to EventBridge:
+  EventBridge has the following configuration
+  <img width="1165" height="297" alt="image" src="https://github.com/user-attachments/assets/84747a80-e476-4d83-90f2-b9490d1de128" />
+
+
+  SQS recieves the event and handles each record in that batch, with failed batches going to the Dead Letter Queue for reprocessing and
+  evaluation.
+
+  Uses partial batch response so only failed messages are retried.
+  Writes to DynamoDB with TransactWrite for idempotency (de-dupe via hash/etag).
+  
+
