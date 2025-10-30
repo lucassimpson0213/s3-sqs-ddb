@@ -25,7 +25,7 @@ export class S3SqsDdbStack extends cdk.Stack {
         fifo: true,
         contentBasedDeduplication: true
     })
-    const queue = new sqs.Queue(this, 'school-project-queue-fifo', {
+    const queue = new sqs.Queue(this, 'school-project-queue', {
       deadLetterQueue: {queue: dlq, maxReceiveCount: 5},
       fifo: true,
       contentBasedDeduplication: true
